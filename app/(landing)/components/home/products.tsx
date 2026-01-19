@@ -1,16 +1,26 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import Button from '../ui/button';
 import { FiPlus } from 'react-icons/fi';
 import { Product } from '@/app/types';
 import { getImageUrl } from '@/app/lib/api';
-
+import { useCartStore } from '@/app/hooks/use-cart-store';
 
 type TProductsProps = {
   products: Product[];
 };
 
 const ProductsSection = ({ products }: TProductsProps) => {
+  const { addItem } = useCartStore();
+
+  const handleAddtoCart = (e: React.MouseEvent, product: Product) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem(product);
+  };
+
   return (
     <section
       id="products-section"
@@ -34,7 +44,10 @@ const ProductsSection = ({ products }: TProductsProps) => {
                 height={300}
                 className="aspect-square object-contain"
               />
-              <Button className="w-10 h-10 p-2! absolute right-3 top-3 ">
+              <Button
+                className="w-10 h-10 p-2! absolute right-3 top-3 "
+                onClick={(e) => handleAddtoCart(e, product)}
+              >
                 <FiPlus size={24} />
               </Button>
             </div>

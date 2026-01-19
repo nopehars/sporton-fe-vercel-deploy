@@ -6,12 +6,47 @@ import FileUpload from '../ui/file-upload';
 import priceFormatter from '@/app/utils/price-formatter';
 import Button from '../ui/button';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useCartStore } from '@/app/hooks/use-cart-store';
+import { transactionCheckout } from '@/app/services/transaction.service';
 
 const PaymentSteps = () => {
   const { push } = useRouter();
+  const { items, customerInfo, reset } = useCartStore(); // Assuming a hook to get customer info
+  const totalPrice = items.reduce((total, item) => total + item.price * item.qty, 0);
+  const [file, setFile] = useState<File | null>();
 
-  const uploadAndConfirm = () => {
-    push('/order-status/123123123');
+  // const uploadAndConfirm = () => {
+  //   push('/order-status/123123123');
+  // };
+
+  const handleConfirmPayment = async () => {
+    if (!file) {
+      return alert('Please upload the payment receipt before confirming.');
+    }
+    if (!customerInfo) {
+      alert('Customer information is missing. Please fill in your details.');
+      push('/checkout');
+      return;
+    }
+    try {
+      const formData = new FormData();
+      formData.append('customerName', customerInfo.customerName);
+      formData.append('customerContact', customerInfo.customerContact!.toString());
+      formData.append('customerAddress', customerInfo.customerAddress);
+      formData.append('image', file);
+      formData.append('purchasedItems', JSON.stringify(items.map((item) => ({ productId: item._id, qty: item.qty }))));
+      formData.append('totalPayment', totalPrice!.toString());
+
+      const res = await transactionCheckout(formData);
+
+      alert('Payment receipt created successfully!');
+      reset();
+      push(`/order-status/${res._id}`);
+
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -28,18 +63,18 @@ const PaymentSteps = () => {
             Upload the payment receipt/screenshot using the <b>'Upload Receipt & Confirm'</b> button below to validate your transaction.
           </li>
         </ol>
-        <FileUpload />
+        <FileUpload onFileSelect={setFile} />
       </div>
 
       <div className="border-t border-gray-200 p-4">
         <div className="flex justify-between font-semibold">
           <div className="text-sm">Total</div>
-          <div className="text-primary text-xs">{priceFormatter(45000)}</div>
+          <div className="text-primary text-xs">{priceFormatter(totalPrice)}</div>
         </div>
         <Button
           variant="dark"
           className="w-full mt-4"
-          onClick={uploadAndConfirm}
+          onClick={handleConfirmPayment}
         >
           <FiCheckCircle />
           Upload Receipt & Confirm
