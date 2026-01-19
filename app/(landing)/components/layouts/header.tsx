@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import Image from 'next/image';
 import Link from 'next/link';
 import { FiSearch, FiShoppingBag } from 'react-icons/fi';
@@ -11,12 +11,14 @@ const Header = () => {
   return (
     <header>
       <div className="flex justify-between gap-10 container mx-auto py-7">
-        <Image
-          src="/images/logo.webp"
-          alt="sporton logo"
-          width={127}
-          height={30}
-        />
+        <Link href="/">
+          <Image
+            src="/images/logo.webp"
+            alt="sporton logo"
+            width={127}
+            height={30}
+          />
+        </Link>
 
         <nav className="flex gap-44 font-medium">
           <Link
