@@ -21,7 +21,7 @@ export interface Product {
 
 export interface Bank {
   _id: string;
-  name: string;
+  bankName: string;
   accountNumber: string;
   accountName: string;
   CreatedAt: string;
