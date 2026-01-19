@@ -4,14 +4,22 @@ import { FiArrowRight, FiChevronDown, FiChevronUp, FiShoppingBag } from 'react-i
 import Button from '../ui/button';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useCartStore } from '@/app/hooks/use-cart-store';
+import { Product } from '@/app/types';
 
 type TProductActionProps = {
+  product: Product;
   stock: number;
 };
 
-const ProductActions = ({ stock }: TProductActionProps) => {
+const ProductActions = ({ product, stock }: TProductActionProps) => {
+  const { addItem } = useCartStore();
   const { push } = useRouter();
   const [qty, setQty] = useState(1);
+
+  const handleAddtoCart = () => {
+    addItem(product, qty);
+  };
 
   const handleCheckout = () => {
     push('/checkout');
@@ -38,7 +46,10 @@ const ProductActions = ({ stock }: TProductActionProps) => {
           </button>
         </div>
       </div>
-      <Button className="px-20 w-full">
+      <Button
+        className="px-20 w-full"
+        onClick={handleAddtoCart}
+      >
         <FiShoppingBag size={24} />
         Add to Cart
       </Button>
