@@ -51,7 +51,7 @@ const CategoryTable = () => {
                 </div>
               </td>
               <td className="px-6 py-4 font-medium">
-                <div className="rounded-md bg-gray-200 px-2 py-1 w-fit">{data.description}</div>
+                <div className="rounded-md px-2 py-1 w-fit">{data.description}</div>
               </td>
               <td className="flex gap-3 text-gray-600 px-7 py-8 items-center">
                 <button>
