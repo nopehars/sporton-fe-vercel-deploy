@@ -1,39 +1,16 @@
+import { getImageUrl } from '@/app/lib/api';
+import { Product } from '@/app/types';
 import priceFormatter from '@/app/utils/price-formatter';
 import Image from 'next/image';
 import { FiEdit2, FiTrash2 } from 'react-icons/fi';
 
-const productData = [
-  {
-    name: 'SportOn Product 1',
-    imageUrl: '/images/products/shoes 2-1.webp',
-    category: 'Shoes',
-    price: 120000,
-    stock: 50,
-  },
-  {
-    name: 'SportOn Product 2',
-    imageUrl: '/images/products/sportshirt 1.webp',
-    category: 'Running',
-    price: 350000,
-    stock: 56,
-  },
-  {
-    name: 'SportOn Product 3',
-    imageUrl: '/images/products/tennis-racket 1.webp',
-    category: 'Tennis',
-    price: 651000,
-    stock: 17,
-  },
-  {
-    name: 'SportOn Product 4',
-    imageUrl: '/images/products/shoes 2-1.webp',
-    category: 'Shoes',
-    price: 620000,
-    stock: 69,
-  },
-];
+type TProductTableProps = {
+  products: Product[];
+  onDelete?: (id: string) => void;
+  onEdit?: (product: Product) => void;
+};
 
-const ProductTable = () => {
+const ProductTable = ({ products, onDelete, onEdit }: TProductTableProps) => {
   return (
     <div className="bg-white rounded-xl border border-gray-200">
       <table className="w-full text-left border-collapse">
@@ -47,16 +24,16 @@ const ProductTable = () => {
           </tr>
         </thead>
         <tbody>
-          {productData.map((data, index) => (
+          {products.map((data, index) => (
             <tr
-              key={index}
+              key={data._id}
               className="border-b border-gray-200 last:border-b-0"
             >
               <td className="px-6 py-4 font-medium">
                 <div className="flex gap-2 items-center">
                   <div className="aspect-square bg-gray-100 rounded-md">
                     <Image
-                      src={data.imageUrl}
+                      src={getImageUrl(data.imageUrl)}
                       width={52}
                       height={52}
                       alt={data.name}
@@ -67,15 +44,21 @@ const ProductTable = () => {
                 </div>
               </td>
               <td className="px-6 py-4 font-medium">
-                <div className="rounded-md bg-gray-200 px-2 py-1 w-fit">{data.category}</div>
+                <div className="rounded-md bg-gray-200 px-2 py-1 w-fit">{data.category?.name ?? 'Uncategorized'}</div>
               </td>
               <td className="px-6 py-4 font-medium">{priceFormatter(data.price)}</td>
               <td className="px-6 py-4 font-medium">{data.stock} units</td>
               <td className="flex gap-3 text-gray-600 px-7 py-8 items-center">
-                <button>
+                <button
+                  onClick={() => onEdit?.(data)}
+                  className="cursor-pointer"
+                >
                   <FiEdit2 size={20} />
                 </button>
-                <button>
+                <button
+                  onClick={() => onDelete?.(data._id)}
+                  className="cursor-pointer"
+                >
                   <FiTrash2 size={20} />
                 </button>
               </td>
